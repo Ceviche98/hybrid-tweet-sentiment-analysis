@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 from nltk.classify import SklearnClassifier
-from scipy.sparse import hstack
+from scipy.sparse import hstack, issparse
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.linear_model import LogisticRegression
@@ -13,12 +13,31 @@ from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
 
 
+def ensure_sparse_int32(X: Any) -> Any:
+    """Ensure sparse matrices have 32-bit integer indices for scikit-learn compatibility on 64-bit Linux."""
+    if issparse(X):
+        if hasattr(X, "indices") and X.indices.dtype != np.int32:
+            X.indices = X.indices.astype(np.int32)
+        if hasattr(X, "indptr") and X.indptr.dtype != np.int32:
+            X.indptr = X.indptr.astype(np.int32)
+    return X
+
+
+class CompatibleSklearnClassifier(SklearnClassifier):
+    """NLTK SklearnClassifier patched for 32-bit sparse matrix indices on Linux."""
+
+    def _vectorize(self, features):
+        X = super()._vectorize(features)
+        return ensure_sparse_int32(X)
+
+
 def train_baseline_nltk_classifier(
     data: List[Tuple[Dict[str, float], str]],
 ) -> SklearnClassifier:
     """Train the baseline NLTK SklearnClassifier wrapping LinearSVC (Question 1-3)."""
     pipeline = Pipeline([("svc", LinearSVC())])
-    return SklearnClassifier(pipeline).train(data)
+    classifier = CompatibleSklearnClassifier(pipeline)
+    return classifier.train(data)
 
 
 def predict_labels_nltk(
@@ -169,7 +188,7 @@ def train_classifier_manual(
     """Train a classifier on `(feature_dict, label)` pairs using a fitted `DictVectorizer`."""
     X_dicts = [d[0] for d in data]
     y_labels = [d[1] for d in data]
-    X_matrix = vectorizer.transform(X_dicts)
+    X_matrix = ensure_sparse_int32(vectorizer.transform(X_dicts))
 
     model = build_classifier(config)
     model.fit(X_matrix, y_labels)
@@ -182,7 +201,7 @@ def predict_labels_manual(
     model: Any,
 ) -> List[str]:
     """Predict labels for a list of feature dictionaries using a fitted vectorizer and model."""
-    X_matrix = vectorizer.transform(samples)
+    X_matrix = ensure_sparse_int32(vectorizer.transform(samples))
     return list(model.predict(X_matrix))
 
 
