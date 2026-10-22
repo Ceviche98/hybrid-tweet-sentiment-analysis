@@ -19,7 +19,7 @@ Short-form social media posts present acute challenges for traditional natural l
 
 | Stage / Architecture | Core Representation | Classifier | 10-Fold CV F1 (%) | Held-Out Test F1 (%) | $\Delta$ vs. Baseline (CV) |
 | :--- | :--- | :--- | :---: | :---: | :---: |
-| **Baseline (Q1–Q2)** | Raw `.split()` + Term Frequency (TF) BoW (`104,038` feats) | `LinearSVC` (Default) | 82.74 | 83.38 | — |
+| **Baseline (Q1-Q2)** | Raw `.split()` + Term Frequency (TF) BoW (`104,038` feats) | `LinearSVC` (Default) | 82.74 | 83.38 | - |
 | **Tweet Preprocessing** | Tweet-aware cleaning + WordNet Lemmatization + Custom Stopwords | `LinearSVC` (Default) | 84.66 | 85.11 | `+1.92%` |
 | **N-Gram Context** | Lemmatization + Stopwords + Unigrams & Bigrams (`N[2]`) + `MIN[3]` | `LinearSVC` (Default) | 85.03 | 85.52 | `+2.29%` |
 | **LexV1 + L1 SVC** | `N[3]` + `MIN[3]` + `LexV1` (Counts & Lexicon Protection) | `LinearSVC (C=0.2, L1, balanced)` | 87.72 | 87.86 | `+4.98%` |
@@ -49,7 +49,7 @@ Evaluating the baseline `LinearSVC` across all 10 validation folds produces:
 - **10-Fold CV Weighted Recall:** `82.88%` (`0.8288`)
 - **10-Fold CV Weighted F1-Score:** `82.74%` (`0.8274`)
 - **10-Fold CV Accuracy:** `82.88%` (`0.8288`)
-- **Held-Out Test Set F1-Score:** `83.38%` (`0.8338` — Precision `83.34%`, Recall `83.51%`)
+- **Held-Out Test Set F1-Score:** `83.38%` (`0.8338`: Precision `83.34%`, Recall `83.51%`)
 
 ---
 
@@ -66,9 +66,9 @@ $$\text{Score}(x) = \sum_{t \in x} w_t \cdot \text{TF}(t, x) + b, \quad \text{wh
 ### 4.1 Confusion Matrix Breakdown (Validation Fold 1)
 | Ground Truth \ Predicted | Predicted `positive` | Predicted `negative` | Total | Class Recall | Error Rate |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **True `positive`** | **1,654** (TP) | **212** (FN — Type II) | 1,866 | 88.64% | 11.36% |
-| **True `negative`** | **255** (FP — Type I) | **563** (TN) | 818 | 68.83% | **31.17%** |
-| **Total** | 1,909 | 775 | 2,684 | — | 17.40% |
+| **True `positive`** | **1,654** (TP) | **212** (FN: Type II) | 1,866 | 88.64% | 11.36% |
+| **True `negative`** | **255** (FP: Type I) | **563** (TN) | 818 | 68.83% | **31.17%** |
+| **Total** | 1,909 | 775 | 2,684 | - | 17.40% |
 
 Because the dataset skews positive, the unregularized SVM learns a positive intercept bias ($b = +0.2353$) and achieves `88.64%` recall on positive tweets, but suffers a **31.17% false positive rate on negative tweets** (`255` FP vs. `563` TN).
 
@@ -154,7 +154,7 @@ All 24 experimental configurations reported in Table I of our paper (evaluated v
 
 | # | Experiment Configuration | 10-Fold CV Train F1 (%) | 10-Fold CV Valid F1 (%) | Held-Out Test F1 (%) | Key Takeaway |
 | :-: | :--- | :---: | :---: | :---: | :--- |
-| 0 | **Baseline: Raw `.split()` + TF BoW + `LinearSVC()`** | — | 82.74 | 83.38 | Strong TF baseline (`104,038` raw tokens); high FP rate on negative class |
+| 0 | **Baseline: Raw `.split()` + TF BoW + `LinearSVC()`** | - | 82.74 | 83.38 | Strong TF baseline (`104,038` raw tokens); high FP rate on negative class |
 | 1 | `PRE + Lemma` | 99.51 | 84.67 | 84.91 | Tweet cleaning + WordNet lemmatization adds `+1.93%` CV F1 (`32,835` feats) |
 | 2 | `PRE + Lemma + Stop` | 99.43 | 84.66 | 85.11 | Negation-preserving stopword removal improves test generalization (`+0.20%`) |
 | 3 | `PRE + Stem` | 99.21 | 84.73 | 85.05 | Porter stemming matches lemmatization on unigrams (`28,640` feats) |
@@ -261,7 +261,7 @@ pytest -v
 
 ## 9. References
 
-1. **Hutto, C. J., & Gilbert, E. (2014).** *VADER: A Parsimonious Rule-based Model for Sentiment Analysis of Social Media Text.* Proceedings of the Eighth International AAAI Conference on Weblogs and Social Media (ICWSM-14), pp. 216–225.
+1. **Hutto, C. J., & Gilbert, E. (2014).** *VADER: A Parsimonious Rule-based Model for Sentiment Analysis of Social Media Text.* Proceedings of the Eighth International AAAI Conference on Weblogs and Social Media (ICWSM-14), pp. 216-225.
 2. **Nielsen, F. Å. (2011).** *A new ANEW: Evaluation of a word list for sentiment analysis in microblogs.* Proceedings of the ESWC2011 Workshop on 'Making Sense of Microposts' (arXiv:1103.2902).
-3. **Hu, M., & Liu, B. (2004).** *Mining and summarizing customer reviews.* Proceedings of the ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, pp. 168–177.
-4. **Reimers, N., & Gurevych, I. (2019).** *Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks.* Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing (EMNLP-IJCNLP), pp. 3982–3992.
+3. **Hu, M., & Liu, B. (2004).** *Mining and summarizing customer reviews.* Proceedings of the ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, pp. 168-177.
+4. **Reimers, N., & Gurevych, I. (2019).** *Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks.* Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing (EMNLP-IJCNLP), pp. 3982-3992.
