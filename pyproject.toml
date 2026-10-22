@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sentiment-analyzer"
+version = "1.0.0"
+description = "Hybrid Tweet Sentiment Analysis combining Multi-Lexicon Heuristics (VADER, AFINN, Hu & Liu), Tweet-Aware N-Grams, Linear Classifiers, and SentenceTransformers + LightGBM"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "Oscar Gabriel Moreno Veliz"}
+]
+dependencies = [
+    "numpy>=1.24.0",
+    "scipy>=1.10.0",
+    "scikit-learn>=1.3.0",
+    "nltk>=3.8.1",
+    "emoji>=2.8.0",
+    "matplotlib>=3.7.0",
+    "lightgbm>=4.0.0",
+    "sentence-transformers>=2.2.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

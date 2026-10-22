@@ -1,0 +1,9 @@
+numpy>=1.24.0
+scipy>=1.10.0
+scikit-learn>=1.3.0
+nltk>=3.8.1
+emoji>=2.8.0
+matplotlib>=3.7.0
+lightgbm>=4.0.0
+sentence-transformers>=2.2.2
+pytest>=7.4.0
