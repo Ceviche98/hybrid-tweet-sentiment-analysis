@@ -26,9 +26,24 @@ def ensure_sparse_int32(X: Any) -> Any:
 class CompatibleSklearnClassifier(SklearnClassifier):
     """NLTK SklearnClassifier patched for 32-bit sparse matrix indices on Linux."""
 
-    def _vectorize(self, features):
-        X = super()._vectorize(features)
-        return ensure_sparse_int32(X)
+    def train(self, labeled_featuresets):
+        """Train scikit-learn estimator ensuring 32-bit sparse matrix indices."""
+        X, y = list(zip(*labeled_featuresets))
+        X = ensure_sparse_int32(self._vectorizer.fit_transform(X))
+        y = self._encoder.fit_transform(y)
+        self._clf.fit(X, y)
+        return self
+
+    def classify_many(self, featuresets):
+        """Classify batch ensuring 32-bit sparse matrix indices."""
+        X = ensure_sparse_int32(self._vectorizer.transform(featuresets))
+        classes = self._encoder.classes_
+        return [classes[i] for i in self._clf.predict(X)]
+
+    def prob_classify_many(self, featuresets):
+        """Estimate class probabilities ensuring 32-bit sparse matrix indices."""
+        X = ensure_sparse_int32(self._vectorizer.transform(featuresets))
+        return super().prob_classify_many(featuresets)
 
 
 def train_baseline_nltk_classifier(
